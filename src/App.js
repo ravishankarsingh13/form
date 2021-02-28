@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useMemo } from 'react'
+import Data from './Data.json'
+import './App.css'
+import FormComponent from './Form';
 
-function App() {
+var groupBy = function (xs, key, subKey) {
+
+  return xs.reduce(function (rv, x) {
+
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    rv[x[key]].sort((a, b) => a[subKey] - b[subKey]);
+    return rv;
+  }, {});
+};
+const App = () => {
+  // const [blur, setBlur] = useState([]);
+  const datanew = useMemo(() => {
+    const newData = Data.map((val) => {
+      return {
+        ...val,
+        sectionName: val.fieldData.sectionName,
+        order: val.fieldData.order,
+      }
+    })
+    const newGroupedData = groupBy([...newData], 'sectionName', 'order');
+    return newGroupedData;
+  }, [])
+  console.log(datanew)
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <FormComponent input={datanew} />   
   );
 }
-
 export default App;
